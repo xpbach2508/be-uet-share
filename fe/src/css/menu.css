@@ -1,0 +1,84 @@
+.item-menu {
+  --color: #560bad;
+  font-family: inherit;
+  display: inline-block;
+  width: 9em;
+  height: 3.6em;
+  line-height: 2.5em;
+  position: relative;
+  overflow: hidden;
+  border: hidden;
+  border-radius: 6px;
+  transition: color 0.5s;
+  z-index: 1;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--color);
+  cursor: pointer;
+  background-color: white;
+}
+
+.item-menu:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  background: var(--color);
+  height: 150px;
+  width: 200px;
+  border-radius: 50%;
+}
+
+.item-menu:hover {
+  color: #fff;
+}
+
+.item-menu:before {
+  top: 100%;
+  left: 100%;
+  transition: all 0.7s;
+}
+
+.item-menu:hover:before {
+  top: -30px;
+  left: -30px;
+}
+
+.item-menu:active:before {
+  background: #3a0ca3;
+  transition: background 0s;
+}
+
+/*----------------------------------------------------------------*/
+footer {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  background-color: white;
+}
+
+#menu {
+  width: 60em;
+  margin: auto;
+}
+
+.item-menu-onclick {
+  --color: white;
+  font-family: inherit;
+  display: inline-block;
+  width: 9em;
+  height: 3.6em;
+  line-height: 2.5em;
+  position: relative;
+  overflow: hidden;
+  border: hidden;
+  border-radius: 6px;
+  transition: color 0.5s;
+  z-index: 1;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--color);
+  cursor: pointer;
+  background-color: #560bad;
+}

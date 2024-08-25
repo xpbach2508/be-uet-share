@@ -1,0 +1,74 @@
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,
+th {
+  border: none;
+  text-align: left;
+  padding: 20px;
+}
+
+tbody > tr:nth-child(even) {
+  background-color: #f1edff;
+}
+
+thead {
+  background-color: #6c7ae0;
+  color: white;
+}
+
+thead > tr > th:first-child {
+  border-radius: 10px 0 0 0;
+}
+
+thead > tr > th:last-child {
+  border-radius: 0 10px 0 0;
+}
+
+.table-container {
+  max-height: 400px;
+  overflow-y: auto; /* Tạo thanh cuộn dọc */
+  border: 1px solid #ccc; /* Thêm viền cho khung chứa bảng */
+}
+
+
+.container1 {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+@media (min-width: 576px) {
+  .container1 {
+    max-width: 740px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container1 {
+    max-width: 920px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container1 {
+    max-width: 1160px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container1 {
+    max-width: 1340px;
+  }
+}
+
+@media print {
+  .container1 {
+    min-width: 1192px !important;
+  }
+}

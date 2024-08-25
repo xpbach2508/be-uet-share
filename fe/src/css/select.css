@@ -1,0 +1,71 @@
+.form-control-select {
+  border-color: rgba(50, 151, 211, 0.25);
+}
+
+.form-control-select {
+  font-size: 1rem;
+  line-height: 1.5;
+  display: block;
+  width: 98%;
+  height: calc(3.4rem + 2px);
+  padding: 0.625rem 0.75rem;
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  color: black;
+  border: 1px solid #cad1d7;
+  border-radius: 0.375rem;
+  background-color: #fff;
+  background-clip: padding-box;
+  box-shadow: none;
+  font-size: 0.875rem;
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+  .form-control-select {
+    transition: none;
+  }
+}
+
+.form-control-select::-ms-expand {
+  border: 0;
+  background-color: transparent;
+}
+
+.form-control-select:focus {
+  color: #8898aa;
+  border-color: rgba(50, 151, 211, 0.25);
+  outline: 0;
+  background-color: #fff;
+  box-shadow: none, none;
+}
+
+.form-control-select:-ms-input-placeholder {
+  opacity: 1;
+  color: #adb5bd;
+}
+
+.form-control-select::-ms-input-placeholder {
+  opacity: 1;
+  color: #adb5bd;
+}
+
+.form-control-select::placeholder {
+  opacity: 1;
+  color: #adb5bd;
+}
+
+.form-control-select:disabled {
+  opacity: 1;
+  background-color: #e9ecef;
+}
+
+.form-control-select:focus:-ms-input-placeholder {
+  color: #adb5bd;
+}
+
+.form-control-select:focus::-ms-input-placeholder {
+  color: #adb5bd;
+}
+
+.form-control-select:focus::placeholder {
+  color: #adb5bd;
+}
