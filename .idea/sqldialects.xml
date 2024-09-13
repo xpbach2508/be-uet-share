@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://D:/Programming/PROJ/Thesis Tshare/Optimal-schedule-dataset/optimal_schedule_experiment_data_10.sql" dialect="MySQL" />
+    <file url="file://D:/Programming/PROJ/Thesis Tshare/Optimal-schedule-dataset/optimal_schedule_schema.sql" dialect="MySQL" />
+  </component>
+</project>

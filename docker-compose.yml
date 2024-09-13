@@ -1,0 +1,13 @@
+services:
+    db:
+        image: mysql:lts
+        container_name: tshare
+        ports:
+        - "3306:3306"
+        environment:
+            MYSQL_USER: admin
+            MYSQL_PASSWORD: admin
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: tshare
+        volumes:
+            - :/var/lib/mysql
