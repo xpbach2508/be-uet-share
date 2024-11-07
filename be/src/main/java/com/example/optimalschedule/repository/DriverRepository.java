@@ -13,9 +13,15 @@ public interface DriverRepository extends JpaRepository<Driver, Integer> {
 
     @Query(value = "select * " +
             "from driver " +
-            "where id not in (select driver_id from group_frequent) " +
+            "where id not in (select driver_id from group_frequent where type != 0) " +
             "limit 1", nativeQuery = true)
     Driver findOneNewTaxi();
+
+    @Query(value = "select * " +
+            "from driver " +
+            "where id not in (select driver_id from group_frequent where type = 0) " +
+            "limit 1", nativeQuery = true)
+    Driver findOneNewHypoTaxi();
 
     Driver findByEmail(String email);
 
@@ -23,4 +29,5 @@ public interface DriverRepository extends JpaRepository<Driver, Integer> {
 
     List<Driver> findAllByOrderByIdDesc();
 
+    Driver findFirstById(int id);
 }

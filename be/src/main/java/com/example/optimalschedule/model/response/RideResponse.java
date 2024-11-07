@@ -24,6 +24,7 @@ public class RideResponse {
     private boolean frequent;
     private int statusId;
     private LocalDate bookingDate;
+    private double increaseCost;
 
     public RideResponse(int routeOrRequestId, String addressStart, String addressEnd, String nameDriver,
                         String licensePlate, String nameCar, int seat, String phoneDriver, Double cost, int groupId) {

@@ -15,6 +15,7 @@ public interface GroupFrequentRepository extends JpaRepository<GroupFrequent, In
             "where id not in (select group_id from request_ride)", nativeQuery = true)
     List<GroupFrequent> findAllOnlyFrequent();
 
+    List<GroupFrequent> findAllByType(int type);
     GroupFrequent findByDriverId(int driverId);
 
 }

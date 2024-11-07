@@ -1,26 +1,21 @@
 package com.example.optimalschedule.controller;
 
 import com.example.optimalschedule.model.request.BookOnlineRequest;
+import com.example.optimalschedule.model.request.PredictedRequest;
 import com.example.optimalschedule.model.response.RideResponse;
-import com.example.optimalschedule.services.BasicInsertService;
-import com.example.optimalschedule.services.LinearInsertService;
-import com.example.optimalschedule.services.NaiveInsertService;
-import com.example.optimalschedule.services.PGreedyLinearInsertService;
+import com.example.optimalschedule.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
 @CrossOrigin
 @RequestMapping("/insert")
-@PreAuthorize("hasRole('ADMIN') or hasRole('PASSENGER')")
+// @PreAuthorize("hasRole('ADMIN') or hasRole('PASSENGER')")
 public class InsertController {
 
     @Autowired
@@ -34,6 +29,9 @@ public class InsertController {
 
     @Autowired
     private PGreedyLinearInsertService pGreedyLinearInsertService;
+
+    @Autowired
+    private ProphetLinearInsertService predictedInsertService;
 
     @PostMapping("/basic")
     public ResponseEntity<?> basicInsertRequest(@RequestBody BookOnlineRequest data) {
@@ -83,4 +81,35 @@ public class InsertController {
         return ResponseEntity.ok().body(pGreedyLinearInsertService.experiment(listRequest));
     }
 
+    @PostMapping("/prophet_linear_dp")
+    public ResponseEntity<?> prophetLinearDPInsert(@RequestBody PredictedRequest data) {
+        data.initializePickUpTimeLate();
+        data.initShowTime();
+        return ResponseEntity.ok().body(predictedInsertService.insertOnlineProphet(data));
+    }
+
+    @PostMapping("/experiment_prophet_linear_dp")
+    public ResponseEntity<?> experimentOnlineProphetLinearDPInsert(@RequestBody List<PredictedRequest> listRequest) {
+        for (PredictedRequest data : listRequest) {
+            data.initializePickUpTimeLate();
+            data.initShowTime();
+        }
+        return ResponseEntity.ok().body(predictedInsertService.experimentOnlineProphet(listRequest));
+    }
+
+    @PostMapping("/experiment_predicted_linear_dp")
+    public ResponseEntity<?> experimentPredictedLinearDPInsert(@RequestBody List<PredictedRequest> listRequest) {
+        for (PredictedRequest data : listRequest) {
+            data.initializePickUpTimeLate();
+            data.initShowTime();
+        }
+        return ResponseEntity.ok().body(predictedInsertService.experimentPredict(listRequest));
+    }
+
+    @PostMapping("/predicted_linear_dp")
+    public ResponseEntity<?> predictedLinearDPInsert(@RequestBody PredictedRequest data) {
+        data.initializePickUpTimeLate();
+        data.initShowTime();
+        return ResponseEntity.ok().body(predictedInsertService.insertPredict(data));
+    }
 }

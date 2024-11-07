@@ -107,7 +107,7 @@ public class InsertService {
         // Create group
         Driver taxi = driverRepository.findOneNewTaxi();
         if (taxi == null) throw new NotImplementedException("Not have taxi ready now!");
-        GroupFrequent newGF = new GroupFrequent(taxi.getId(), 0);
+        GroupFrequent newGF = new GroupFrequent(taxi.getId(), 0, 1);
         gfRepository.save(newGF);
 
         // Update schedule

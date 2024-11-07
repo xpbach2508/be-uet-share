@@ -1,5 +1,6 @@
 package com.example.optimalschedule.repository;
 
+import com.example.optimalschedule.entity.Driver;
 import com.example.optimalschedule.entity.Schedule;
 import com.example.optimalschedule.model.response.ScheduleAdminResponse;
 import com.example.optimalschedule.model.response.ScheduleDriverResponse;
@@ -42,5 +43,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     List<Schedule> findByGroupIdAndPassengerId(int groupId, int passengerId);
 
     Boolean existsByGroupIdAndPassengerId(int groupId, int passengerId);
+
+    @Query(value = "select SUM(COALESCE(expected_time - LAG(expected_time) OVER (ORDER BY expected_time), 0)) AS total_difference from schedule", nativeQuery = true)
+    Double calculateTotalTime();
 
 }

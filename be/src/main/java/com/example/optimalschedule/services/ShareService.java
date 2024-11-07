@@ -71,7 +71,7 @@ public class ShareService implements IShareService {
         // Create group
         Driver taxi = driverRepository.findOneNewTaxi();
         if (taxi == null) throw new NotImplementedException("Not have taxi ready now!");
-        GroupFrequent newGF = new GroupFrequent(taxi.getId(), routeId);
+        GroupFrequent newGF = new GroupFrequent(taxi.getId(), routeId, 1);
         gfRepository.save(newGF);
 
         // Update schedule

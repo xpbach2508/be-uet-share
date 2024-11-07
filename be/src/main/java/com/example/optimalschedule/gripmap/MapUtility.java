@@ -31,6 +31,7 @@ public class MapUtility {
     public static int NUMBER_OF_EDGE = 768; // NUMBER_OF_LONGITUDE * NUMBER_OF_LATITUDE
 
     public static double MINUTES = 0.5; // Trong frequent thì chỉ có time đến dự kiến => Cộng thêm 30' để tạo ra time muộn nhất
+    public static double WAIT_MINUTES = 0.1; // Trong prophet thì thời gian đón là 6' kể từ thời điểm xuất hiện request
 
     /**
      * Method to decode polyline points Courtesy :
@@ -216,6 +217,10 @@ public class MapUtility {
 
     public static double timeLate(double expectedTime) {
         return expectedTime + MapUtility.MINUTES;
+    }
+
+    public static double showTime(double expectedTime) {
+        return expectedTime - MapUtility.WAIT_MINUTES;
     }
 
     public static int convertToGridId(double lat, double lng) {

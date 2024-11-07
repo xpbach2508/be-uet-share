@@ -23,7 +23,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signup_driver")
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> signupDriver(@RequestBody DriverRequest driver) {
         authService.signupDriver(driver);
         return ResponseEntity.ok(new MessageResponse("Success"));

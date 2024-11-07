@@ -21,14 +21,19 @@ public class GroupFrequent {
     // if value = 0 => taxi only serving online booking
     private int mainRouteId;
 
-    public GroupFrequent(int driverId, int mainRouteId) {
+    //0 is hypothetical worker, 1 is real
+    private int type;
+
+    public GroupFrequent(int driverId, int mainRouteId, int type) {
         this.driverId = driverId;
         this.mainRouteId = mainRouteId;
+        this.type = type;
     }
 
-    public GroupFrequent(int id, int driverId, int mainRouteId) {
+    public GroupFrequent(int id, int driverId, int mainRouteId, int type) {
         this.id = id;
         this.driverId = driverId;
         this.mainRouteId = mainRouteId;
+        this.type = type;
     }
 }

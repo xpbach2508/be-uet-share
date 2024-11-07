@@ -17,6 +17,7 @@ import com.example.optimalschedule.services.IServices.IInsertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import java.util.HashMap;
 import java.util.List;
@@ -258,6 +259,8 @@ public class PGreedyLinearInsertService implements IInsertService {
     @Override
     public int experiment(List<BookOnlineRequest> listRequest) {
         int count = 0;
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         for (BookOnlineRequest data : listRequest) {
             try {
                 insert(data);
@@ -266,6 +269,9 @@ public class PGreedyLinearInsertService implements IInsertService {
                 System.out.println(e);
             }
         }
+        stopWatch.stop();
+        System.out.println(stopWatch.getTotalTimeMillis());
+
         return count;
     }
 

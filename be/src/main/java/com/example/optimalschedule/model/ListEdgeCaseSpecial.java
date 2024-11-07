@@ -20,8 +20,8 @@ public class ListEdgeCaseSpecial {
 
     public Double timeIncrease() {
         double result = iToOrigin.getDuration() + originToDes.getDuration();
-        if (desToI1 != null) result += desToI1.getDuration();
-        if (iToI1 != null) result -= iToI1.getDuration();
+        if (desToI1 != null) result += desToI1.getDuration(); //case insert not at end
+        if (iToI1 != null) result -= iToI1.getDuration(); //case insert not at end
         return result;
     }
 

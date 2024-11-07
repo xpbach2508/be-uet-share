@@ -14,4 +14,5 @@ public interface TaxiRepository extends JpaRepository<Taxi, Integer> {
             "order by id desc", nativeQuery = true)
     List<Taxi> getAllTaxiEmpty();
 
+    Taxi findFirstById(int taxiId);
 }
