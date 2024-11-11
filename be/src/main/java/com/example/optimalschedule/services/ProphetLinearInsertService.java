@@ -3,26 +3,22 @@ package com.example.optimalschedule.services;
 import com.example.optimalschedule.common.exception.BadRequestException;
 import com.example.optimalschedule.common.exception.NotImplementedException;
 import com.example.optimalschedule.common.secutity.service.UserDetailsImpl;
-import com.example.optimalschedule.entity.Driver;
-import com.example.optimalschedule.entity.GroupFrequent;
-import com.example.optimalschedule.entity.GuidanceSchedule;
-import com.example.optimalschedule.entity.Taxi;
+import com.example.optimalschedule.entity.*;
 import com.example.optimalschedule.gripmap.MapUtility;
 import com.example.optimalschedule.model.ListEdgeCaseNormal;
 import com.example.optimalschedule.model.ListEdgeCaseSpecial;
 import com.example.optimalschedule.model.QueryEdge;
+import com.example.optimalschedule.model.request.BookOnlineRequest;
 import com.example.optimalschedule.model.request.PredictedRequest;
 import com.example.optimalschedule.model.response.RideResponse;
-import com.example.optimalschedule.repository.DriverRepository;
-import com.example.optimalschedule.repository.GroupFrequentRepository;
-import com.example.optimalschedule.repository.GuidanceScheduleRepository;
-import com.example.optimalschedule.repository.TaxiRepository;
+import com.example.optimalschedule.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -37,6 +33,9 @@ public class ProphetLinearInsertService {
 
     @Autowired
     private GroupFrequentRepository gfRepository;
+
+    @Autowired
+    private RequestRideRepository rqRepository;
 
     @Autowired
     private DriverRepository driverRepository;
@@ -55,7 +54,18 @@ public class ProphetLinearInsertService {
         List<GroupFrequent> listGroup = gfRepository.findAllByType(0);
         if (listGroup.size() == 0)
           return insertService.createNewGroup(data, gridOriginId, gridDesId, userDetails.getId(), 0, 3);
-        return insertProphet(userDetails, data, listGroup, gridOriginId, gridDesId, 3); //3 is predicted
+        RideResponse newRide = insertProphet(userDetails, data, listGroup, gridOriginId, gridDesId, 3); //3 is predicted
+        List<GroupFrequent> listHypoGroup = gfRepository.findAllByType(0);
+        for (GroupFrequent group : listHypoGroup) {
+            Driver driver = driverRepository.findFirstById(group.getDriverId());
+            List<GuidanceSchedule> schedulePredict = scheduleRepository.findByGroupIdOrderByExpectedTime(group.getId());
+            int capacityAvailable = driver.getSeat() - 1;
+            for (GuidanceSchedule schedule : schedulePredict) {
+                schedule.setCapacityAvailable(capacityAvailable);
+                scheduleRepository.save(schedule);
+            }
+        }
+        return newRide;
     }
 
     public RideResponse insertOnlineProphet(PredictedRequest data) throws BadRequestException, NotImplementedException {
@@ -98,6 +108,18 @@ public class ProphetLinearInsertService {
             detour[0] = Double.MAX_VALUE;
             plc[0] = -1;
 
+            int startDes = 0;
+            int endDes = length - 1;
+
+            List<Integer> boundDestination = findBeginAndEndJ(schedules, data, length, gridDesId, data.getPickUpTime(), lateTimeDes);
+            startDes = boundDestination.get(0);
+            endDes = boundDestination.get(1);
+            if (startDes == -1) startDes = 0;
+            if (endDes < 0) endDes = length - 1;
+//            startDes = 0; because the latetime doesn sorted ascending, cause by distance length from origin to destination
+//            System.out.println("Find startDes + endDes: " + startDes + " - " + endDes);
+
+
             // Initialization slack time
             HashMap<Integer, Double> slackTime = new HashMap<>();
             for (int i = length - 2; i >= 0; i--) {
@@ -123,17 +145,17 @@ public class ProphetLinearInsertService {
 
             // Duyệt các point destination
             boolean desLastPoint = false;
-            for (int j = 0; j < length; j++) {
+            for (int j = startDes; j <= endDes; j++) {
                 if (j == length - 1) desLastPoint = true;
 
                 // Case special: origin == destination
                 ListEdgeCaseSpecial listSpecial = findAllEdgeCaseSpecial(schedules, j, gridOriginId, gridDesId,
                         desLastPoint, originToDes);
                 double increaseDuration = listSpecial.timeIncrease();
-                double expectedOrigin = listSpecial.getIToOrigin().getDuration() + schedules.get(j).getExpectedTime();
-                double waitR = Math.max(0.0, data.getShowTime() - (expectedOrigin + schedules.get(j).getWait()));
-                if (expectedOrigin <= data.getPickUpTimeLate() && expectedOrigin >= data.getPickUpTime() //page 25 still lack lemma 11-3 condition
-                        && (desLastPoint || increaseDuration + waitR < slackTime.get(j))) {
+                double expectedOrigin = listSpecial.getIToOrigin().getDuration() + schedules.get(j).getExpectedTime() + schedules.get(j).getWait();
+                double waitR = Math.max(0.0, data.getPickUpTime() - (expectedOrigin));
+                if (requestType == 2) waitR = 0.0;
+                if (expectedOrigin <= data.getPickUpTimeLate() && (desLastPoint || increaseDuration + waitR < slackTime.get(j))) {  //page 25 still lack lemma 11-3 conditio
                     double increaseDistance = listSpecial.distanceIncrease();
                     if (deltaDistanceMin == null || increaseDistance < deltaDistanceMin) {
                         deltaDistanceMin = increaseDistance;
@@ -216,7 +238,9 @@ public class ProphetLinearInsertService {
         // Check late time destination
         double expectedTimeDes = pointJ.getExpectedTime() + + pointJ.getWait() + Math.max(detour[destination] + swait.get(destination + 1), 0.0) + listNormal.getJToDes().getDuration();
 //        if (pointJ.getScheduleId() == 3) lateTimeDes = ;
-        if (expectedTimeDes > lateTimeDes || expectedTimeDes < startTimeDes) return false;
+//        if (expectedTimeDes > lateTimeDes || expectedTimeDes < startTimeDes) return false;
+        if (expectedTimeDes > lateTimeDes) return false;
+
 
         // Check slack time
         if (desLastPoint) return true;
@@ -266,6 +290,44 @@ public class ProphetLinearInsertService {
         return new ListEdgeCaseNormal(iToOrigin, originToI1, iToI1, jToDes, null, null);
     }
 
+    private List<Integer> findBeginAndEndJ(List<GuidanceSchedule> schedules, PredictedRequest data, int length, int gridDesId, Double showTimeR, Double deadlineR) {
+        // Find beginJ
+        int beginJ = -1;
+        int start = 0, end = length - 1;
+        int mid = -1;
+        while (start <= end) {
+            mid = start + (end - start) / 2;
+            GuidanceSchedule pointMid = schedules.get(mid);
+            Double deadlineMid = pointMid.getLateTime();
+            // Case <
+           if (deadlineMid > showTimeR) {
+                end = mid - 1;
+                beginJ = mid;
+            } else {
+               start = mid + 1;
+           }
+        }
+
+        int endJ = -1;
+        start = 0;
+        end = length - 1;
+        mid = -1;
+        while (start <= end) {
+            mid = start + (end - start) / 2;
+            GuidanceSchedule pointMid = schedules.get(mid);
+            Double expectedTime = pointMid.getExpectedTime();
+            // Case <
+            if (expectedTime >= deadlineR) {
+                end = mid - 1;
+                beginJ = mid;
+            } else {
+                start = mid + 1;
+            }
+        }
+        
+        return new ArrayList<>(List.of(beginJ, endJ - 1));
+    }
+
     public int experimentPredict(List<PredictedRequest> listRequest) {
         int count = 0;
         for (PredictedRequest data : listRequest) {
@@ -289,7 +351,7 @@ public class ProphetLinearInsertService {
         return count;
     }
 
-    public long[] experimentOnlineProphet(List<PredictedRequest> listRequest) {
+    public String experimentOnlineProphet(List<PredictedRequest> listRequest) {
         long count = 0;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -303,6 +365,7 @@ public class ProphetLinearInsertService {
         }
         stopWatch.stop();
         List<GroupFrequent> listGroup = gfRepository.findAllByType(0);
+        //get total time running in roads - cost
         Double totalTime = 0.0;
         for (GroupFrequent group : listGroup) {
             List<GuidanceSchedule> schedules = scheduleRepository.findByGroupIdOrderByExpectedTime(group.getId());
@@ -311,9 +374,12 @@ public class ProphetLinearInsertService {
                 totalTime += (schedules.get(i + 1).getExpectedTime() - schedules.get(i).getExpectedTime());
             }
         }
-        System.out.println(stopWatch.getTotalTimeMillis());
-        System.out.println(totalTime);
-        return new long[] {count, stopWatch.getTotalTimeMillis()};
+        List<RequestRide> requestNotServed = rqRepository.findByStatusId(4);
+        Double betaForUnifiedCost = 10.0;
+        return "Number of request served: " + count + "\n Number of groups: " + listGroup.size()
+                + "\n Total running time: " + stopWatch.getTotalTimeMillis()
+                + "\n Total cost: " + requestNotServed.size() * betaForUnifiedCost + totalTime
+                + "\n Number of request not served: " + requestNotServed.size() ;
     }
 
 }
