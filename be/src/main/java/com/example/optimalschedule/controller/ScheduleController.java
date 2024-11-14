@@ -29,7 +29,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> scheduleAllDriver() {
         List<ScheduleAdminResponse> schedules = scheduleService.scheduleAllDriver();
         return ResponseEntity.ok(schedules);
