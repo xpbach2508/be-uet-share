@@ -52,7 +52,7 @@ public class ProphetLinearInsertService {
         int gridDesId = MapUtility.convertToGridId(data.getLatDestination(), data.getLngDestination());
         // If not have taxi ready
         List<GroupFrequent> listGroup = gfRepository.findAllByType(0);
-        if (listGroup.size() == 0)
+        if (listGroup.isEmpty())
           return insertService.createNewGroup(data, gridOriginId, gridDesId, userDetails.getId(), 0, 3);
         RideResponse newRide = insertProphet(userDetails, data, listGroup, gridOriginId, gridDesId, 3); //3 is predicted
         List<GroupFrequent> listHypoGroup = gfRepository.findAllByType(0);
@@ -80,7 +80,7 @@ public class ProphetLinearInsertService {
         int gridDesId = MapUtility.convertToGridId(data.getLatDestination(), data.getLngDestination());
         // If not have taxi ready
         List<GroupFrequent> listGroup = gfRepository.findAllByType(0);
-        if (listGroup.size() == 0)
+        if (listGroup.isEmpty())
             return insertService.createNewGroup(data, gridOriginId, gridDesId, userDetails.getId(), 0, 2);
         return insertProphet(userDetails, data, listGroup, gridOriginId, gridDesId, 2);
     }
@@ -116,8 +116,8 @@ public class ProphetLinearInsertService {
             endDes = boundDestination.get(1);
             if (startDes == -1) startDes = 0;
             if (endDes < 0) endDes = length - 1;
-//            startDes = 0; because the latetime doesn sorted ascending, cause by distance length from origin to destination
-//            System.out.println("Find startDes + endDes: " + startDes + " - " + endDes);
+//            startDes = 0; // because the latetime doesn sorted ascending, cause by distance length from origin to destination
+            System.out.println("Find startDes + endDes: " + startDes + " - " + endDes);
 
 
             // Initialization slack time
@@ -311,7 +311,6 @@ public class ProphetLinearInsertService {
         int endJ = -1;
         start = 0;
         end = length - 1;
-        mid = -1;
         while (start <= end) {
             mid = start + (end - start) / 2;
             GuidanceSchedule pointMid = schedules.get(mid);
@@ -319,7 +318,7 @@ public class ProphetLinearInsertService {
             // Case <
             if (expectedTime >= deadlineR) {
                 end = mid - 1;
-                beginJ = mid;
+                endJ = mid;
             } else {
                 start = mid + 1;
             }
@@ -328,8 +327,11 @@ public class ProphetLinearInsertService {
         return new ArrayList<>(List.of(beginJ, endJ - 1));
     }
 
-    public int experimentPredict(List<PredictedRequest> listRequest) {
-        int count = 0;
+    public String experimentPredict(List<PredictedRequest> listRequest) {
+        insertService.clearData();
+        long count = 0;
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         for (PredictedRequest data : listRequest) {
             try {
                 insertPredict(data);
@@ -338,6 +340,7 @@ public class ProphetLinearInsertService {
                 System.out.println(e);
             }
         }
+        stopWatch.stop();
         List<GroupFrequent> listHypoGroup = gfRepository.findAllByType(0);
         for (GroupFrequent group : listHypoGroup) {
             Driver driver = driverRepository.findFirstById(group.getDriverId());
@@ -345,10 +348,27 @@ public class ProphetLinearInsertService {
             int capacityAvailable = driver.getSeat() - 1;
             for (GuidanceSchedule schedule : schedulePredict) {
                 schedule.setCapacityAvailable(capacityAvailable);
+                schedule.setLateTime(99.9);
                 scheduleRepository.save(schedule);
             }
         }
-        return count;
+        List<GroupFrequent> listGroup = gfRepository.findAllByType(0);
+        //get total time running in roads - cost
+        double totalTime = 0.0;
+        for (GroupFrequent group : listGroup) {
+            List<GuidanceSchedule> schedules = scheduleRepository.findByGroupIdOrderByExpectedTime(group.getId());
+            int length = schedules.size();
+            for (int i = 0; i <= length - 2; i++) {
+                totalTime += (schedules.get(i + 1).getExpectedTime() - schedules.get(i).getExpectedTime());
+            }
+        }
+        List<RequestRide> requestNotServed = rqRepository.findByStatusId(4);
+        double betaForUnifiedCost = 10.0;
+        double unifiedCost = requestNotServed.size() * betaForUnifiedCost + totalTime;
+        return "Number of request served: " + count + "\n Number of groups: " + listGroup.size()
+                + "\n Total running time: " + stopWatch.getTotalTimeMillis()
+                + "\n Total cost: " + unifiedCost
+                + "\n Number of request not served: " + requestNotServed.size() ;
     }
 
     public String experimentOnlineProphet(List<PredictedRequest> listRequest) {
@@ -365,9 +385,25 @@ public class ProphetLinearInsertService {
         }
         stopWatch.stop();
         List<GroupFrequent> listGroup = gfRepository.findAllByType(0);
-        //get total time running in roads - cost
-        Double totalTime = 0.0;
+        List<Integer> groupIdDontServeOnline = new ArrayList<>();
         for (GroupFrequent group : listGroup) {
+            List<GuidanceSchedule> schedules = scheduleRepository.findByGroupIdOrderByExpectedTime(group.getId());
+            int length = schedules.size();
+            boolean servedOnline = false;
+            for (int i = 0; i <= length - 1; i++) {
+                if (schedules.get(i).getScheduleId() == 2) {
+                    servedOnline = true;
+                    break;
+                }
+            }
+            if (!servedOnline) {groupIdDontServeOnline.add(group.getId());}
+        }
+        //get total time running in roads - cost
+        double totalTime = 0.0;
+        for (GroupFrequent group : listGroup) {
+            if (groupIdDontServeOnline.contains(group.getId())) {
+                continue;
+            }
             List<GuidanceSchedule> schedules = scheduleRepository.findByGroupIdOrderByExpectedTime(group.getId());
             int length = schedules.size();
             for (int i = 0; i <= length - 2; i++) {
@@ -375,10 +411,11 @@ public class ProphetLinearInsertService {
             }
         }
         List<RequestRide> requestNotServed = rqRepository.findByStatusId(4);
-        Double betaForUnifiedCost = 10.0;
-        return "Number of request served: " + count + "\n Number of groups: " + listGroup.size()
+        double betaForUnifiedCost = 10.0;
+        double unifiedCost = requestNotServed.size() * betaForUnifiedCost + totalTime;
+        return "Number of request served: " + count + "\n Number of groups: " + (listGroup.size() - groupIdDontServeOnline.size())
                 + "\n Total running time: " + stopWatch.getTotalTimeMillis()
-                + "\n Total cost: " + requestNotServed.size() * betaForUnifiedCost + totalTime
+                + "\n Total cost: " + totalTime
                 + "\n Number of request not served: " + requestNotServed.size() ;
     }
 

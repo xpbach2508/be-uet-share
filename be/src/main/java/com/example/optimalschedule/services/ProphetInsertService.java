@@ -12,6 +12,7 @@ import com.example.optimalschedule.model.request.PredictedRequest;
 import com.example.optimalschedule.model.response.RideResponse;
 import com.example.optimalschedule.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -36,6 +37,16 @@ public class ProphetInsertService {
 
     @Autowired
     private GroupFrequentRepository gfRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    public void clearData() {
+        jdbcTemplate.update("DELETE FROM group_frequent WHERE id >= 11");
+        jdbcTemplate.update("DELETE FROM request_ride WHERE id >= 19");
+        jdbcTemplate.update("DELETE FROM optimal_schedule.guidance_schedule WHERE id >= 1");
+        jdbcTemplate.update("DELETE FROM optimal_schedule.schedule WHERE id >= 93");
+    }
 
     public RideResponse createAndInsertRequest(PredictedRequest data, GroupFrequent groupOptimal, int indexOrigin,
                                                int indexDes, List<GuidanceSchedule> scheduleOfOptimal,
