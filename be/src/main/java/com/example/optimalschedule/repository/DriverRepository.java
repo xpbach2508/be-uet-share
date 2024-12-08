@@ -29,5 +29,7 @@ public interface DriverRepository extends JpaRepository<Driver, Integer> {
 
     List<Driver> findAllByOrderByIdDesc();
 
+    List<Driver> findAllByOrderByIdAsc();
+
     Driver findFirstById(int id);
 }

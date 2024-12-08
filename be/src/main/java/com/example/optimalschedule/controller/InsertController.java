@@ -15,7 +15,7 @@ import java.util.List;
 @Controller
 @CrossOrigin
 @RequestMapping("/insert")
-// @PreAuthorize("hasRole('ADMIN') or hasRole('PASSENGER')")
+@PreAuthorize("hasRole('ADMIN') or hasRole('PASSENGER')")
 public class InsertController {
 
     @Autowired

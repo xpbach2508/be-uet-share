@@ -1,5 +1,6 @@
 package com.example.optimalschedule.controller;
 
+import com.example.optimalschedule.model.response.ScheduleAdminProphetResponse;
 import com.example.optimalschedule.model.response.ScheduleAdminResponse;
 import com.example.optimalschedule.model.response.ScheduleDriverResponse;
 import com.example.optimalschedule.services.ScheduleService;
@@ -29,9 +30,16 @@ public class ScheduleController {
     }
 
     @GetMapping("/admin")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> scheduleAllDriver() {
         List<ScheduleAdminResponse> schedules = scheduleService.scheduleAllDriver();
+        return ResponseEntity.ok(schedules);
+    }
+
+    @GetMapping("/admin-prophet")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> scheduleAllProphet() {
+        List<ScheduleAdminProphetResponse> schedules = scheduleService.scheduleAllDriverProphet();
         return ResponseEntity.ok(schedules);
     }
 

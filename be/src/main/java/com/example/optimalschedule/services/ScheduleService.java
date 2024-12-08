@@ -4,9 +4,11 @@ import com.example.optimalschedule.common.exception.NotFoundException;
 import com.example.optimalschedule.common.secutity.service.UserDetailsImpl;
 import com.example.optimalschedule.constant.Message;
 import com.example.optimalschedule.entity.GroupFrequent;
+import com.example.optimalschedule.model.response.ScheduleAdminProphetResponse;
 import com.example.optimalschedule.model.response.ScheduleAdminResponse;
 import com.example.optimalschedule.model.response.ScheduleDriverResponse;
 import com.example.optimalschedule.repository.GroupFrequentRepository;
+import com.example.optimalschedule.repository.GuidanceScheduleRepository;
 import com.example.optimalschedule.repository.ScheduleRepository;
 import com.example.optimalschedule.services.IServices.IScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class ScheduleService implements IScheduleService {
     private ScheduleRepository scheduleRepository;
 
     @Autowired
+    private GuidanceScheduleRepository guidanceScheduleRepository;
+
+    @Autowired
     private GroupFrequentRepository gfRepository;
 
     @Override
@@ -30,14 +35,20 @@ public class ScheduleService implements IScheduleService {
         GroupFrequent gf = gfRepository.findByDriverId(userDetails.getId());
         if (gf == null) throw new NotFoundException(Message.NOT_FOUND_GROUP);
         List<ScheduleDriverResponse> result = scheduleRepository.getScheduleByGroupIdOrderByExpectedTime(gf.getId());
-        if (result == null || result.size() == 0) throw new NotFoundException(Message.NOT_FOUND_SCHEDULE);
+        if (result == null || result.isEmpty()) throw new NotFoundException(Message.NOT_FOUND_SCHEDULE);
         return result;
     }
 
     @Override
     public List<ScheduleAdminResponse> scheduleAllDriver() {
         List<ScheduleAdminResponse> result = scheduleRepository.getAllScheduleOrderByExpectedTime();
-        if (result == null || result.size() == 0) throw new NotFoundException(Message.NOT_FOUND_ALL_SCHEDULE);
+        if (result == null || result.isEmpty()) throw new NotFoundException(Message.NOT_FOUND_ALL_SCHEDULE);
+        return result;
+    }
+
+    public List<ScheduleAdminProphetResponse> scheduleAllDriverProphet() {
+        List<ScheduleAdminProphetResponse> result = guidanceScheduleRepository.getAllScheduleOrderByExpectedTime();
+        if (result == null || result.isEmpty()) throw new NotFoundException(Message.NOT_FOUND_ALL_SCHEDULE);
         return result;
     }
 

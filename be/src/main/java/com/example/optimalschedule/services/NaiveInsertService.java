@@ -40,6 +40,9 @@ public class NaiveInsertService implements IInsertService {
     @Autowired
     private RequestRideRepository rqRepository;
 
+    @Autowired
+    private MetricService metricService;
+
     @Override
     public RideResponse insert(BookOnlineRequest data) throws BadRequestException, NotImplementedException {
         // Get current user
@@ -187,22 +190,6 @@ public class NaiveInsertService implements IInsertService {
             }
         }
         stopWatch.stop();
-        List<GroupFrequent> listGroup = gfRepository.findAllByType(1);
-        //get total time running in roads - cost
-        double totalTime = 0.0;
-        for (GroupFrequent group : listGroup) {
-            List<Schedule> schedules = scheduleRepository.findByGroupIdOrderByExpectedTime(group.getId());
-            int length = schedules.size();
-            for (int i = 0; i <= length - 2; i++) {
-                totalTime += (schedules.get(i + 1).getExpectedTime() - schedules.get(i).getExpectedTime());
-            }
-        }
-        List<RequestRide> requestNotServed = rqRepository.findByStatusId(4);
-        double betaForUnifiedCost = 10.0;
-        double unifiedCost = requestNotServed.size() * betaForUnifiedCost + totalTime;
-        return "Number of request served: " + count + "\n Number of groups: " + listGroup.size()
-                + "\n Total running time: " + stopWatch.getTotalTimeMillis()
-                + "\n Total cost: " + unifiedCost
-                + "\n Number of request not served: " + requestNotServed.size();
+        return metricService.getAllScheduleMetricsPlain(stopWatch.getTotalTimeMillis(), count); // 1 is online only
     }
 }

@@ -92,7 +92,7 @@ public class AuthService implements IAuthService {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return new LoginResponse(jwt, userDetails.getRole(), userDetails.getFullName());
+        return new LoginResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getRole());
     }
 
     @Override
