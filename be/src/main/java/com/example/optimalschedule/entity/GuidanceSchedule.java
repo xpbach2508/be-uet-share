@@ -3,6 +3,7 @@ package com.example.optimalschedule.entity;
 import com.example.optimalschedule.model.response.ScheduleAdminProphetResponse;
 import com.example.optimalschedule.model.response.ScheduleAdminResponse;
 import com.example.optimalschedule.model.response.ScheduleDriverResponse;
+import com.example.optimalschedule.model.response.ScheduleProphetDriverResponse;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +13,7 @@ import javax.persistence.*;
         name = "guidanceScheduleMapping",
         classes = {
                 @ConstructorResult(
-                        targetClass = ScheduleDriverResponse.class,
+                        targetClass = ScheduleProphetDriverResponse.class,
                         columns = {
                                 @ColumnResult(name = "lat", type = Double.class),
                                 @ColumnResult(name = "lng", type = Double.class),

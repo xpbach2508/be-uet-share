@@ -3,6 +3,7 @@ package com.example.optimalschedule.controller;
 import com.example.optimalschedule.model.response.ScheduleAdminProphetResponse;
 import com.example.optimalschedule.model.response.ScheduleAdminResponse;
 import com.example.optimalschedule.model.response.ScheduleDriverResponse;
+import com.example.optimalschedule.model.response.ScheduleProphetDriverResponse;
 import com.example.optimalschedule.services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -40,6 +42,13 @@ public class ScheduleController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> scheduleAllProphet() {
         List<ScheduleAdminProphetResponse> schedules = scheduleService.scheduleAllDriverProphet();
+        return ResponseEntity.ok(schedules);
+    }
+
+    @GetMapping("/driver-prophet")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> scheduleDriverProphet(@RequestParam("groupId") int groupId) {
+        List<ScheduleProphetDriverResponse> schedules = scheduleService.scheduleOfDriverProphet(groupId);
         return ResponseEntity.ok(schedules);
     }
 

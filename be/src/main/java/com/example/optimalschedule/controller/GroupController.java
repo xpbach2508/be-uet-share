@@ -1,6 +1,5 @@
 package com.example.optimalschedule.controller;
 
-import com.example.optimalschedule.services.FrequentService;
 import com.example.optimalschedule.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

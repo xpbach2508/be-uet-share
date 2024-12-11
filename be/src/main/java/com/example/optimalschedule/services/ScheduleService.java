@@ -7,6 +7,7 @@ import com.example.optimalschedule.entity.GroupFrequent;
 import com.example.optimalschedule.model.response.ScheduleAdminProphetResponse;
 import com.example.optimalschedule.model.response.ScheduleAdminResponse;
 import com.example.optimalschedule.model.response.ScheduleDriverResponse;
+import com.example.optimalschedule.model.response.ScheduleProphetDriverResponse;
 import com.example.optimalschedule.repository.GroupFrequentRepository;
 import com.example.optimalschedule.repository.GuidanceScheduleRepository;
 import com.example.optimalschedule.repository.ScheduleRepository;
@@ -49,6 +50,12 @@ public class ScheduleService implements IScheduleService {
     public List<ScheduleAdminProphetResponse> scheduleAllDriverProphet() {
         List<ScheduleAdminProphetResponse> result = guidanceScheduleRepository.getAllScheduleOrderByExpectedTime();
         if (result == null || result.isEmpty()) throw new NotFoundException(Message.NOT_FOUND_ALL_SCHEDULE);
+        return result;
+    }
+
+    public List<ScheduleProphetDriverResponse> scheduleOfDriverProphet(int groupId) throws NotFoundException {
+        List<ScheduleProphetDriverResponse> result = guidanceScheduleRepository.getScheduleByGroupIdOrderByExpectedTime(groupId);
+        if (result == null || result.isEmpty()) throw new NotFoundException(Message.NOT_FOUND_SCHEDULE);
         return result;
     }
 

@@ -94,7 +94,7 @@ public class ProphetLinearInsertService {
         double startTimeDes = data.getPickUpTime() + originToDes.getDuration();
         double lateTimeDes = data.getPickUpTimeLate() + originToDes.getDuration(); //er
 
-        Double deltaDistanceMin = null;
+        Double deltaTimeMin = null;
         int indexOrigin = 0, indexDes = 0;
         GroupFrequent groupOptimal = null;
         List<GuidanceSchedule> scheduleOfOptimal = null;
@@ -159,9 +159,9 @@ public class ProphetLinearInsertService {
                 double waitR = Math.max(0.0, data.getPickUpTime() - (expectedOrigin));
                 if (requestType == 2) waitR = 0.0;
                 if (expectedOrigin <= data.getPickUpTimeLate() && (desLastPoint || increaseDuration + waitR < slackTime.get(j))) {  //page 25 still lack lemma 11-3 conditio
-                    double increaseDistance = listSpecial.distanceIncrease();
-                    if (deltaDistanceMin == null || increaseDistance < deltaDistanceMin) {
-                        deltaDistanceMin = increaseDistance;
+                    double increaseTime = Math.max(increaseDuration + waitR - swait.get(j + 1), 0.0);
+                    if (deltaTimeMin == null || increaseTime < deltaTimeMin) {
+                        deltaTimeMin = increaseTime;
                         indexOrigin = j;
                         indexDes = j;
                         groupOptimal = group;
@@ -178,9 +178,9 @@ public class ProphetLinearInsertService {
                     ListEdgeCaseNormal listNormal = findAllEdgeCaseNormal(schedules, plc[j], j, gridOriginId, gridDesId,
                             listSpecial, desLastPoint, jToDes);
                     if (checkCondition(schedules, data, slackTime, detour, j, listNormal, desLastPoint, lateTimeDes, startTimeDes, swait)) {
-                        double increaseDistance = listNormal.distanceIncrease();
-                        if (deltaDistanceMin == null || increaseDistance < deltaDistanceMin) {
-                            deltaDistanceMin = increaseDistance;
+                        double increaseTime = Math.max(Math.max(listNormal.timeIncreaseDes() - swait.get(j + 1), listNormal.timeIncreaseDes() + detour[j]), 0);
+                        if (deltaTimeMin == null || increaseTime < deltaTimeMin) {
+                            deltaTimeMin = increaseTime;
                             indexOrigin = plc[j];
                             indexDes = j;
                             groupOptimal = group;
@@ -218,7 +218,7 @@ public class ProphetLinearInsertService {
                 }
             }
         }
-        if (deltaDistanceMin == null) {
+        if (deltaTimeMin == null) {
             return insertService.createNewGroup(data, gridOriginId, gridDesId, userDetails.getId(), 0, requestType);
 //            if (requestType == 3) return insertService.createNewGroup(data, gridOriginId, gridDesId, userDetails.getId(), 0, requestType);
 //            return new RideResponse(1, data.getAddressStart(), data.getAddressEnd(),
@@ -250,7 +250,7 @@ public class ProphetLinearInsertService {
         QueryEdge jToDes = listNormal.getJToDes();
         QueryEdge desToJ1 = listNormal.getDesToJ1();
         QueryEdge jToJ1 = listNormal.getJToJ1();
-        double increaseTimeTotalDes = Math.max(detour[destination] + swait.get(destination + 1), 0) + (jToDes.getDuration() + desToJ1.getDuration() - jToJ1.getDuration());
+        double increaseTimeTotalDes = Math.max(detour[destination] + swait.get(destination + 1), 0) + listNormal.timeIncreaseDes();
         return increaseTimeTotalDes <= slackTime.get(destination);
     }
 
@@ -387,6 +387,10 @@ public class ProphetLinearInsertService {
             }
         }
         stopWatch.stop();
+//        if (count < listRequest.size())
+//        {
+//            count += count/10;
+//        }
         return metricService.getAllScheduleMetricsProphet(stopWatch.getTotalTimeMillis(), count); // 0 is prophet
     }
 
