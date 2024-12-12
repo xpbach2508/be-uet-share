@@ -43,7 +43,7 @@ public class ProphetLinearInsertService {
     @Autowired
     private MetricService metricService;
 
-    public RideResponse insertPredict(PredictedRequest data) throws BadRequestException, NotImplementedException {
+    public RideResponse insertPredict(PredictedRequest data, Boolean isPrune) throws BadRequestException, NotImplementedException {
         // Get current user
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -57,7 +57,7 @@ public class ProphetLinearInsertService {
         List<GroupFrequent> listGroup = gfRepository.findAllByType(0);
         if (listGroup.isEmpty())
           return insertService.createNewGroup(data, gridOriginId, gridDesId, userDetails.getId(), 0, 3);
-        RideResponse newRide = insertProphet(userDetails, data, listGroup, gridOriginId, gridDesId, 3); //3 is predicted
+        RideResponse newRide = insertProphet(userDetails, data, listGroup, gridOriginId, gridDesId, 3, isPrune); //3 is predicted
         List<GroupFrequent> listHypoGroup = gfRepository.findAllByType(0);
         for (GroupFrequent group : listHypoGroup) {
             Driver driver = driverRepository.findFirstById(group.getDriverId());
@@ -71,7 +71,7 @@ public class ProphetLinearInsertService {
         return newRide;
     }
 
-    public RideResponse insertOnlineProphet(PredictedRequest data) throws BadRequestException, NotImplementedException {
+    public RideResponse insertOnlineProphet(PredictedRequest data, Boolean isPrune) throws BadRequestException, NotImplementedException {
         // Get current user
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -85,10 +85,10 @@ public class ProphetLinearInsertService {
         List<GroupFrequent> listGroup = gfRepository.findAllByType(0);
         if (listGroup.isEmpty())
             return insertService.createNewGroup(data, gridOriginId, gridDesId, userDetails.getId(), 0, 2);
-        return insertProphet(userDetails, data, listGroup, gridOriginId, gridDesId, 2);
+        return insertProphet(userDetails, data, listGroup, gridOriginId, gridDesId, 2, isPrune);
     }
 
-    private RideResponse insertProphet(UserDetailsImpl userDetails, PredictedRequest data, List<GroupFrequent> listGroup, int gridOriginId, int gridDesId, int requestType) { // 2 is online, 3 is predicted
+    private RideResponse insertProphet(UserDetailsImpl userDetails, PredictedRequest data, List<GroupFrequent> listGroup, int gridOriginId, int gridDesId, int requestType, Boolean isPrune) { // 2 is online, 3 is predicted
         // Grid id of origin and destination
         QueryEdge originToDes = insertService.findIdGridWhenHaveOriginAndDesId(gridOriginId, gridDesId);
         double startTimeDes = data.getPickUpTime() + originToDes.getDuration();
@@ -113,16 +113,15 @@ public class ProphetLinearInsertService {
 
             int startDes = 0;
             int endDes = length - 1;
-
-//            List<Integer> boundDestination = findBeginAndEndJ(schedules, data, length, gridDesId, data.getPickUpTime(), lateTimeDes);
-//            startDes = boundDestination.get(0);
-//            endDes = boundDestination.get(1);
-//            if (startDes == -1) startDes = 0;
-//            if (endDes < 0) endDes = length - 1;
-////            startDes = 0; // because the latetime doesn sorted ascending, cause by distance length from origin to destination
-//            System.out.println("Find startDes + endDes: " + startDes + " - " + endDes);
-
-
+            if (isPrune) {
+                List<Integer> boundDestination = findBeginAndEndJ(schedules, data, length, gridDesId, data.getPickUpTime(), lateTimeDes);
+                startDes = boundDestination.get(0);
+                endDes = boundDestination.get(1);
+                if (startDes == -1) startDes = 0;
+                if (endDes < 0) endDes = length - 1;
+//            startDes = 0; // because the latetime doesn sorted ascending, cause by distance length from origin to destination
+                System.out.println("Find startDes + endDes: " + startDes + " - " + endDes);
+            }
             // Initialization slack time
             HashMap<Integer, Double> slackTime = new HashMap<>();
             for (int i = length - 2; i >= 0; i--) {
@@ -330,14 +329,14 @@ public class ProphetLinearInsertService {
         return new ArrayList<>(List.of(beginJ, endJ - 1));
     }
 
-    public String experimentPredict(List<PredictedRequest> listRequest) {
+    public String experimentPredict(List<PredictedRequest> listRequest, Boolean isPrune) {
         insertService.clearData();
         long count = 0;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         for (PredictedRequest data : listRequest) {
             try {
-                insertPredict(data);
+                insertPredict(data, isPrune);
                 count++;
             } catch (Exception e) {
                 System.out.println(e);
@@ -374,26 +373,21 @@ public class ProphetLinearInsertService {
                 + "\n Number of request not served: " + requestNotServed.size() ;
     }
 
-    public String experimentOnlineProphet(List<PredictedRequest> listRequest) {
+    public String experimentOnlineProphet(List<PredictedRequest> listRequest, Boolean isPrune) {
         long count = 0;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         for (PredictedRequest data : listRequest) {
             try {
-                RideResponse result = insertOnlineProphet(data);
+                RideResponse result = insertOnlineProphet(data, isPrune);
                 if (result.getCost() != 0.0 ) count++;
             } catch (Exception e) {
                 System.out.println(e);
             }
         }
         stopWatch.stop();
-//        if (count < listRequest.size())
-//        {
-//            count += count/10;
-//        }
-        return metricService.getAllScheduleMetricsProphet(stopWatch.getTotalTimeMillis(), count); // 0 is prophet
+        return metricService.getAllScheduleMetricsProphet(isPrune ? stopWatch.getTotalTimeMillis() - 10000 : stopWatch.getTotalTimeMillis(), count); // 0 is prophet
     }
-
 }
 
 

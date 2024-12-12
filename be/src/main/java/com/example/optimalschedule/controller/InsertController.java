@@ -86,7 +86,7 @@ public class InsertController {
     public ResponseEntity<?> prophetLinearDPInsert(@RequestBody PredictedRequest data) {
         data.initializePickUpTimeLate();
         data.initShowTime();
-        RideResponse request = predictedInsertService.insertOnlineProphet(data);
+        RideResponse request = predictedInsertService.insertOnlineProphet(data, false);
         this.socketIOEvents.server.getBroadcastOperations().sendEvent(MESSAGE_FROM_SERVER, request.getGroupId());
         return ResponseEntity.ok().body(request);
     }
@@ -97,7 +97,16 @@ public class InsertController {
             data.initializePickUpTimeLate();
             data.initShowTime();
         }
-        return ResponseEntity.ok().body(predictedInsertService.experimentOnlineProphet(listRequest));
+        return ResponseEntity.ok().body(predictedInsertService.experimentOnlineProphet(listRequest, false));
+    }
+
+    @PostMapping("/experiment_prune_prophet")
+    public ResponseEntity<?> experimentOnlinePruneProphetInsert(@RequestBody List<PredictedRequest> listRequest) {
+        for (PredictedRequest data : listRequest) {
+            data.initializePickUpTimeLate();
+            data.initShowTime();
+        }
+        return ResponseEntity.ok().body(predictedInsertService.experimentOnlineProphet(listRequest, true));
     }
 
     @PostMapping("/experiment_predicted_linear_dp")
@@ -106,13 +115,22 @@ public class InsertController {
             data.initializePickUpTimeLate();
             data.initShowTime();
         }
-        return ResponseEntity.ok().body(predictedInsertService.experimentPredict(listRequest));
+        return ResponseEntity.ok().body(predictedInsertService.experimentPredict(listRequest, false));
+    }
+
+    @PostMapping("/experiment_prune_predicted_prophet")
+    public ResponseEntity<?> experimentPredictedPruneProphetInsert(@RequestBody List<PredictedRequest> listRequest) {
+        for (PredictedRequest data : listRequest) {
+            data.initializePickUpTimeLate();
+            data.initShowTime();
+        }
+        return ResponseEntity.ok().body(predictedInsertService.experimentPredict(listRequest, true));
     }
 
     @PostMapping("/predicted_linear_dp")
     public ResponseEntity<?> predictedLinearDPInsert(@RequestBody PredictedRequest data) {
         data.initializePickUpTimeLate();
         data.initShowTime();
-        return ResponseEntity.ok().body(predictedInsertService.insertPredict(data));
+        return ResponseEntity.ok().body(predictedInsertService.insertPredict(data, false));
     }
 }
