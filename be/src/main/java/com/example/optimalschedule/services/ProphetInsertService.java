@@ -12,6 +12,7 @@ import com.example.optimalschedule.model.request.PredictedRequest;
 import com.example.optimalschedule.model.response.RideResponse;
 import com.example.optimalschedule.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -36,6 +37,16 @@ public class ProphetInsertService {
 
     @Autowired
     private GroupFrequentRepository gfRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    public void clearData() {
+        jdbcTemplate.update("DELETE FROM group_frequent WHERE id >= 11");
+        jdbcTemplate.update("DELETE FROM request_ride WHERE id >= 19");
+        jdbcTemplate.update("DELETE FROM optimal_schedule.guidance_schedule WHERE id >= 1");
+        jdbcTemplate.update("DELETE FROM optimal_schedule.schedule WHERE id >= 93");
+    }
 
     public RideResponse createAndInsertRequest(PredictedRequest data, GroupFrequent groupOptimal, int indexOrigin,
                                                int indexDes, List<GuidanceSchedule> scheduleOfOptimal,
@@ -79,11 +90,12 @@ public class ProphetInsertService {
             capacityOfDes = scheduleOfOptimal.get(des).getCapacityAvailable();
         }
 
-        double waitTimeOrigin = Math.max(0.0, req.getShowTime() - expectedTimeOrigin);
+        double waitTimeOrigin = Math.max(0.0, req.getPickUpTime() - expectedTimeOrigin);
+        double pickUpTimeLate = MapUtility.timeLate(expectedTimeOrigin + waitTimeOrigin);
+        double lateTimeDes = pickUpTimeLate + expectedTimeDes - expectedTimeOrigin;
         // insert
         GuidanceSchedule scheduleOriginNew = new GuidanceSchedule(groupOptimal.getId(), userId, req.getLatOrigin(), req.getLngOrigin(),
-                req.getPickUpTimeLate(), expectedTimeOrigin, 1, requestType, capacityOfOrigin, waitTimeOrigin);
-        double lateTimeDes = req.getPickUpTimeLate() + (expectedTimeDes - expectedTimeOrigin);
+                pickUpTimeLate, expectedTimeOrigin, 1, requestType, capacityOfOrigin, waitTimeOrigin);
         GuidanceSchedule scheduleDes = new GuidanceSchedule(groupOptimal.getId(), userId, req.getLatDestination(), req.getLngDestination(),
                 lateTimeDes, expectedTimeDes, 2, requestType, capacityOfDes, 0.0);
         scheduleRepository.save(scheduleOriginNew);
@@ -118,14 +130,20 @@ public class ProphetInsertService {
         if (typeGroup == 0) {
             // Create group
             Driver taxi = driverRepository.findOneNewHypoTaxi();
-            if (taxi == null) throw new NotImplementedException("Not have taxi ready now!");
+            if (taxi == null) {
+                RequestRide request = new RequestRide(userId, data.getPickUpTime(), data.getCapacity(),
+                        data.getLength() * MapUtility.COST_OF_KM * data.getCapacity(), data.getLatOrigin(),
+                        data.getLngOrigin(), data.getLatDestination(), data.getLngDestination(), 4, 0,
+                        data.getAddressStart(), data.getAddressEnd());
+                rideRepository.save(request);
+                throw new NotImplementedException("Not have taxi ready now!");
+            }
             GroupFrequent newGF = new GroupFrequent(taxi.getId(), 0, typeGroup);
             gfRepository.save(newGF);
 
             // Update schedule
             // origin
             double expected_time_origin = data.getPickUpTime();
-            System.out.println(expected_time_origin);
             double waitTime = 0.2; //init waiting time from first request
             GuidanceSchedule start = new GuidanceSchedule(newGF.getId(), userId, data.getLatOrigin(),
                     data.getLngOrigin(), data.getPickUpTimeLate(), expected_time_origin - waitTime, 1, requestType,
@@ -162,14 +180,14 @@ public class ProphetInsertService {
             // Update schedule
             // origin
             double expected_time_origin = data.getPickUpTime();
-            double waitTime = Math.max(data.getShowTime() - expected_time_origin, 0.0);
+            double waitTime = Math.max(data.getPickUpTime() - expected_time_origin, 0.0);
             GuidanceSchedule start = new GuidanceSchedule(newGF.getId(), userId, data.getLatOrigin(),
                     data.getLngOrigin(), data.getPickUpTimeLate(), expected_time_origin, 1, 2,
                     taxi.getSeat() - 1 - data.getCapacity(), waitTime);
             // destination
             QueryEdge originToDes = findIdGridWhenHaveOriginAndDesId(gridOriginId, gridDesId);
             double expected_time_des = expected_time_origin + originToDes.getDuration();
-            double waitTimeDes = Math.max(data.getShowTime() - expected_time_des, 0.0);
+            double waitTimeDes = Math.max(data.getPickUpTime() - expected_time_des, 0.0);
             double late_time_des = data.getPickUpTimeLate() + (expected_time_des - expected_time_origin);
             GuidanceSchedule end = new GuidanceSchedule(newGF.getId(), userId, data.getLatDestination(),
                     data.getLngDestination(), late_time_des, expected_time_des, 2, 2,

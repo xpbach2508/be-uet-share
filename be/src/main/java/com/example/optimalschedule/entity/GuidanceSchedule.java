@@ -1,7 +1,9 @@
 package com.example.optimalschedule.entity;
 
+import com.example.optimalschedule.model.response.ScheduleAdminProphetResponse;
 import com.example.optimalschedule.model.response.ScheduleAdminResponse;
 import com.example.optimalschedule.model.response.ScheduleDriverResponse;
+import com.example.optimalschedule.model.response.ScheduleProphetDriverResponse;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,21 +13,22 @@ import javax.persistence.*;
         name = "guidanceScheduleMapping",
         classes = {
                 @ConstructorResult(
-                        targetClass = ScheduleDriverResponse.class,
+                        targetClass = ScheduleProphetDriverResponse.class,
                         columns = {
                                 @ColumnResult(name = "lat", type = Double.class),
                                 @ColumnResult(name = "lng", type = Double.class),
                                 @ColumnResult(name = "passengerName", type = String.class),
                                 @ColumnResult(name = "passengerPhone", type = String.class),
                                 @ColumnResult(name = "locationId", type = int.class),
-                                @ColumnResult(name = "expectedTime", type = Double.class)
+                                @ColumnResult(name = "expectedTime", type = Double.class),
+                                @ColumnResult(name = "wait", type = Double.class),
                         }
                 )
         }
 )
 
 @NamedNativeQuery(name = "getGuidanceScheduleByGroupIdOrderByExpectedTime", query = "select s.lat, s.lng, p.full_name as passengerName, " +
-        "p.phone as passengerPhone, s.location_id as locationId, s.expected_time as expectedTime " +
+        "p.phone as passengerPhone, s.location_id as locationId, s.expected_time as expectedTime, s.wait as wait " +
         "from guidance_schedule as s " +
         "inner join passenger as p on s.passenger_id = p.id " +
         "where s.group_id = ?1 " +
@@ -35,22 +38,24 @@ import javax.persistence.*;
         name = "guidanceScheduleAdminMapping",
         classes = {
                 @ConstructorResult(
-                        targetClass = ScheduleAdminResponse.class,
+                        targetClass = ScheduleAdminProphetResponse.class,
                         columns = {
+                                @ColumnResult(name = "id", type = Integer.class),
                                 @ColumnResult(name = "groupId", type = Integer.class),
                                 @ColumnResult(name = "lat", type = Double.class),
                                 @ColumnResult(name = "lng", type = Double.class),
                                 @ColumnResult(name = "driverName", type = String.class),
                                 @ColumnResult(name = "licensePlate", type = String.class),
                                 @ColumnResult(name = "nameCar", type = String.class),
-                                @ColumnResult(name = "expectedTime", type = Double.class)
+                                @ColumnResult(name = "expectedTime", type = Double.class),
+                                @ColumnResult(name = "wait", type = Double.class),
                         }
                 )
         }
 )
 
-@NamedNativeQuery(name = "getAllGuidanceScheduleOrderByExpectedTime", query = "select s.group_id as groupId, s.lat, s.lng, " +
-        "d.full_name as driverName, d.license_plate as licensePlate, d.name_car as nameCar, s.expected_time as expectedTime " +
+@NamedNativeQuery(name = "getAllGuidanceScheduleOrderByExpectedTime", query = "select s.id as id, s.group_id as groupId, s.lat, s.lng, " +
+        "d.full_name as driverName, d.license_plate as licensePlate, d.name_car as nameCar, s.expected_time as expectedTime, s.wait as wait " +
         "from guidance_schedule as s " +
         "inner join group_frequent as gf on gf.id = s.group_id " +
         "inner join driver as d on gf.driver_id = d.id " +

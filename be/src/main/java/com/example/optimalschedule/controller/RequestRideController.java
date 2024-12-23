@@ -1,6 +1,7 @@
 package com.example.optimalschedule.controller;
 
-import com.example.optimalschedule.services.FrequentService;
+import com.example.optimalschedule.services.RequestRideService;
+import com.example.optimalschedule.services.RideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -8,20 +9,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @CrossOrigin
 @Controller
-@RequestMapping("/frequent")
-@PreAuthorize("hasRole('PASSENGER')")
-public class FrequentController {
+@RequestMapping("/request")
+@PreAuthorize("hasRole('ADMIN')")
+public class RequestRideController {
 
     @Autowired
-    private FrequentService frequentService;
+    private RequestRideService service;
 
-    @GetMapping("")
-    public ResponseEntity<?> getAllFrequentByAccountId() {
-        return ResponseEntity.ok(frequentService.getAllFrequentByAccountId());
+    @GetMapping("/served")
+    public ResponseEntity<?> getAllRequestServed() {
+        return ResponseEntity.ok(service.getAllServedRequest());
     }
-
 }

@@ -14,11 +14,13 @@ public class LoginResponse {
         3: passenger
      */
     private int role;
-    private String fullName;
+    private String username;
+    private int id;
 
-    public LoginResponse(String jwt, int role, String fullName) {
+    public LoginResponse(String jwt, int id, String username, int role) {
         this.jwt = jwt;
         this.role = role;
-        this.fullName = fullName;
+        this.username = username;
+        this.id = id;
     }
 }

@@ -31,6 +31,10 @@ public class TaxiService implements ITaxiService {
 
     @Override
     public List<Driver> getAllTaxiActive() {
-        return driverRepository.findAllByOrderByIdDesc();
+        return driverRepository.findAllByOrderByIdAsc();
+    }
+
+    public List<Taxi> getAllTaxi() {
+        return taxiRepository.findAll();
     }
 }

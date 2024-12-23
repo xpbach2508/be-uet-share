@@ -15,4 +15,6 @@ public interface TaxiRepository extends JpaRepository<Taxi, Integer> {
     List<Taxi> getAllTaxiEmpty();
 
     Taxi findFirstById(int taxiId);
+
+    List<Taxi> findAll();
 }

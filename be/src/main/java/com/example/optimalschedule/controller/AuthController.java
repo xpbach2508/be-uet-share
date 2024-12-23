@@ -6,6 +6,7 @@ import com.example.optimalschedule.entity.OTP;
 import com.example.optimalschedule.entity.Passenger;
 import com.example.optimalschedule.model.request.ChangePassRequest;
 import com.example.optimalschedule.model.request.DriverRequest;
+import com.example.optimalschedule.model.request.LoginRequest;
 import com.example.optimalschedule.model.response.LoginResponse;
 import com.example.optimalschedule.model.response.MessageResponse;
 import com.example.optimalschedule.services.AuthService;
@@ -36,9 +37,9 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("Success"));
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<?> login(@RequestParam("email") String email, @RequestParam("password") String password) {
-        LoginResponse response = authService.login(email, password);
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest authEntity) {
+        LoginResponse response = authService.login(authEntity.getEmail(), authEntity.getPassword());
         return ResponseEntity.ok(response);
     }
 

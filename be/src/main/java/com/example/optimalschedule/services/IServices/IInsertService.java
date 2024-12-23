@@ -12,5 +12,5 @@ public interface IInsertService {
 
     RideResponse insert(BookOnlineRequest data) throws BadRequestException, NotImplementedException;
 
-    int experiment(List<BookOnlineRequest> listRequest);
+    String experiment(List<BookOnlineRequest> listRequest);
 }

@@ -4,6 +4,8 @@ import com.example.optimalschedule.common.exception.BadRequestException;
 import com.example.optimalschedule.common.exception.NotImplementedException;
 import com.example.optimalschedule.common.secutity.service.UserDetailsImpl;
 import com.example.optimalschedule.entity.GroupFrequent;
+import com.example.optimalschedule.entity.GuidanceSchedule;
+import com.example.optimalschedule.entity.RequestRide;
 import com.example.optimalschedule.entity.Schedule;
 import com.example.optimalschedule.gripmap.MapUtility;
 import com.example.optimalschedule.model.ListEdgeCaseNormal;
@@ -13,11 +15,13 @@ import com.example.optimalschedule.model.request.BookOnlineRequest;
 import com.example.optimalschedule.model.response.ExperimentResponse;
 import com.example.optimalschedule.model.response.RideResponse;
 import com.example.optimalschedule.repository.GroupFrequentRepository;
+import com.example.optimalschedule.repository.RequestRideRepository;
 import com.example.optimalschedule.repository.ScheduleRepository;
 import com.example.optimalschedule.services.IServices.IInsertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import java.util.List;
 
@@ -33,6 +37,12 @@ public class BasicInsertService implements IInsertService {
     @Autowired
     private GroupFrequentRepository gfRepository;
 
+    @Autowired
+    private RequestRideRepository rqRepository;
+
+    @Autowired
+    private MetricService metricService;
+
     @Override
     public RideResponse insert(BookOnlineRequest data) throws BadRequestException, NotImplementedException {
         // Get current user
@@ -47,7 +57,7 @@ public class BasicInsertService implements IInsertService {
 
         // If not have taxi ready
         List<GroupFrequent> listGroup = gfRepository.findAll();
-        if (listGroup.size() == 0) return insertService.createNewGroup(data, gridOriginId, gridDesId, userDetails.getId());
+        if (listGroup.isEmpty()) return insertService.createNewGroup(data, gridOriginId, gridDesId, userDetails.getId());
 
         Double deltaDistanceMin = null;
         int indexOrigin = 0, indexDes = 0;
@@ -173,9 +183,13 @@ public class BasicInsertService implements IInsertService {
         return new ListEdgeCaseNormal(iToOrigin, originToI1, iToI1, jToDes, null, null);
     }
 
+
     @Override
-    public int experiment(List<BookOnlineRequest> listRequest) {
-        int count = 0;
+    public String experiment(List<BookOnlineRequest> listRequest) {
+        insertService.clearData();
+        long count = 0;
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         for (BookOnlineRequest data : listRequest) {
             try {
                 insert(data);
@@ -184,7 +198,8 @@ public class BasicInsertService implements IInsertService {
                 System.out.println(e);
             }
         }
-        return count;
+        stopWatch.stop();
+        return metricService.getAllScheduleMetricsPlain(stopWatch.getTotalTimeMillis(), count);
     }
 
 }

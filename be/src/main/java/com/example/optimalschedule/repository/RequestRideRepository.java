@@ -15,4 +15,6 @@ public interface RequestRideRepository extends JpaRepository<RequestRide, Intege
 
     @Query(nativeQuery = true, name = "getAllOnlineByAccountId")
     List<RideResponse> getAllOnlineByAccountId(int accountId);
+
+    List<RequestRide> findByStatusId(int statusId);
 }

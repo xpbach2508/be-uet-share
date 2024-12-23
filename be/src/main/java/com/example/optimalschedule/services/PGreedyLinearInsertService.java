@@ -4,6 +4,7 @@ import com.example.optimalschedule.common.exception.BadRequestException;
 import com.example.optimalschedule.common.exception.NotImplementedException;
 import com.example.optimalschedule.common.secutity.service.UserDetailsImpl;
 import com.example.optimalschedule.entity.GroupFrequent;
+import com.example.optimalschedule.entity.RequestRide;
 import com.example.optimalschedule.entity.Schedule;
 import com.example.optimalschedule.gripmap.MapUtility;
 import com.example.optimalschedule.model.ListEdgeCaseNormal;
@@ -12,6 +13,7 @@ import com.example.optimalschedule.model.QueryEdge;
 import com.example.optimalschedule.model.request.BookOnlineRequest;
 import com.example.optimalschedule.model.response.RideResponse;
 import com.example.optimalschedule.repository.GroupFrequentRepository;
+import com.example.optimalschedule.repository.RequestRideRepository;
 import com.example.optimalschedule.repository.ScheduleRepository;
 import com.example.optimalschedule.services.IServices.IInsertService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,12 @@ public class PGreedyLinearInsertService implements IInsertService {
 
     @Autowired
     private GroupFrequentRepository gfRepository;
+
+    @Autowired
+    private RequestRideRepository rqRepository;
+
+    @Autowired
+    private MetricService metricService;
 
     @Override
     public RideResponse insert(BookOnlineRequest data) throws BadRequestException, NotImplementedException {
@@ -257,7 +265,7 @@ public class PGreedyLinearInsertService implements IInsertService {
     }
 
     @Override
-    public int experiment(List<BookOnlineRequest> listRequest) {
+    public String experiment(List<BookOnlineRequest> listRequest) {
         int count = 0;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -270,9 +278,7 @@ public class PGreedyLinearInsertService implements IInsertService {
             }
         }
         stopWatch.stop();
-        System.out.println(stopWatch.getTotalTimeMillis());
-
-        return count;
+        return metricService.getAllScheduleMetricsPlain(stopWatch.getTotalTimeMillis(), count);
     }
 
 }

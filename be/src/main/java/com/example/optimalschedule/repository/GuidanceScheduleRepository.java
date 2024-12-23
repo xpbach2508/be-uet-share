@@ -1,8 +1,10 @@
 package com.example.optimalschedule.repository;
 
 import com.example.optimalschedule.entity.GuidanceSchedule;
+import com.example.optimalschedule.model.response.ScheduleAdminProphetResponse;
 import com.example.optimalschedule.model.response.ScheduleAdminResponse;
 import com.example.optimalschedule.model.response.ScheduleDriverResponse;
+import com.example.optimalschedule.model.response.ScheduleProphetDriverResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -31,11 +33,11 @@ public interface GuidanceScheduleRepository extends JpaRepository<GuidanceSchedu
     @Query(value = "delete from guidance_schedule where group_id = ?1 and passenger_id = ?2", nativeQuery = true)
     void deleteOnePassenger(int groupId, int userId);
 
-    @Query(nativeQuery = true, name = "getScheduleByGroupIdOrderByExpectedTime")
-    List<ScheduleDriverResponse> getScheduleByGroupIdOrderByExpectedTime(int groupId);
+    @Query(nativeQuery = true, name = "getGuidanceScheduleByGroupIdOrderByExpectedTime")
+    List<ScheduleProphetDriverResponse> getScheduleByGroupIdOrderByExpectedTime(int groupId);
 
-    @Query(nativeQuery = true, name = "getAllScheduleOrderByExpectedTime")
-    List<ScheduleAdminResponse> getAllScheduleOrderByExpectedTime();
+    @Query(nativeQuery = true, name = "getAllGuidanceScheduleOrderByExpectedTime")
+    List<ScheduleAdminProphetResponse> getAllScheduleOrderByExpectedTime();
 
     List<GuidanceSchedule> findByGroupIdOrderByExpectedTime(int groupId);
 

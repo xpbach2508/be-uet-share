@@ -14,6 +14,7 @@ import com.example.optimalschedule.model.request.BookOnlineRequest;
 import com.example.optimalschedule.model.response.RideResponse;
 import com.example.optimalschedule.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -38,6 +39,16 @@ public class InsertService {
 
     @Autowired
     private GroupFrequentRepository gfRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    public void clearData() {
+        jdbcTemplate.update("DELETE FROM group_frequent WHERE id >= 11");
+        jdbcTemplate.update("DELETE FROM request_ride WHERE id >= 19");
+        jdbcTemplate.update("DELETE FROM optimal_schedule.guidance_schedule WHERE id >= 1");
+        jdbcTemplate.update("DELETE FROM optimal_schedule.schedule WHERE id >= 93");
+    }
 
     public RideResponse createAndInsertRequest(BookOnlineRequest data, GroupFrequent groupOptimal, int indexOrigin,
                                                int indexDes, List<Schedule> scheduleOfOptimal,
@@ -106,7 +117,14 @@ public class InsertService {
     public RideResponse createNewGroup(BookOnlineRequest data, int gridOriginId, int gridDesId, int userId) {
         // Create group
         Driver taxi = driverRepository.findOneNewTaxi();
-        if (taxi == null) throw new NotImplementedException("Not have taxi ready now!");
+        if (taxi == null) {
+            RequestRide request = new RequestRide(userId, data.getPickUpTime(), data.getCapacity(),
+                    data.getLength() * MapUtility.COST_OF_KM * data.getCapacity(), data.getLatOrigin(),
+                    data.getLngOrigin(), data.getLatDestination(), data.getLngDestination(), 4, 0,
+                    data.getAddressStart(), data.getAddressEnd());
+            rideRepository.save(request);
+            throw new NotImplementedException("Not have taxi ready now!");
+        }
         GroupFrequent newGF = new GroupFrequent(taxi.getId(), 0, 1);
         gfRepository.save(newGF);
 
