@@ -1,0 +1,145 @@
+[
+  {
+    "pickUpTime": 7.65,
+    "capacity": 2,
+    "latOrigin": 21.0462504,
+    "lngOrigin": 105.8497221,
+    "latDestination": 21.0079236,
+    "lngDestination": 105.7999622,
+    "addressStart": "Trường THCS Phúc Xá, 2, Phố An Xá, Phường Phúc Xá, Quận Ba Đình, Thành phố Hà Nội, 11009, Việt Nam",
+    "addressEnd": "Trường THCS Trần Duy Hưng, 5, Phố Nguyễn Xuân Linh, Phường Trung Hòa, Quận Cầu Giấy, Thành phố Hà Nội, 10055, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.56,
+    "capacity": 3,
+    "latOrigin": 21.0112297,
+    "lngOrigin": 105.7945222,
+    "latDestination": 21.0431166,
+    "lngDestination": 105.8319554,
+    "addressStart": "Trường Mầm non Peace School, Phố Tú Mỡ, Phường Trung Hòa, Quận Cầu Giấy, Thành phố Hà Nội, 10055, Việt Nam",
+    "addressEnd": "Trường THPT Chu Văn An, 10, Đường Thụy Khuê, Phường Thụy Khuê, Quận Tây Hồ, Thành phố Hà Nội, 10287, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.25,
+    "capacity": 2,
+    "latOrigin": 21.0182448,
+    "lngOrigin": 105.7858869,
+    "latDestination": 21.0232576,
+    "lngDestination": 105.8478061,
+    "addressStart": "Trường Tiểu học Nam Trung Yên, Lô A3, Phố Đinh Núp, Phường Yên Hòa, Quận Cầu Giấy, Thành phố Hà Nội, 10037, Việt Nam",
+    "addressEnd": "tạp hoá mường thanh, 78, Phố Thợ Nhuộm, Phường Trần Hưng Đạo, Quận Hoàn Kiếm, Thành phố Hà Nội, 11019, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.73,
+    "capacity": 3,
+    "latOrigin": 21.0079236,
+    "lngOrigin": 105.7999622,
+    "latDestination": 21.0094054,
+    "lngDestination": 105.8494822,
+    "addressStart": "Trường THCS Trần Duy Hưng, 5, Phố Nguyễn Xuân Linh, Phường Trung Hòa, Quận Cầu Giấy, Thành phố Hà Nội, 10055, Việt Nam",
+    "addressEnd": "Trường THCS Vân Hồ, 193, Phố Bà Triệu, Phường Lê Đại Hành, Quận Hai Bà Trưng, Thành phố Hà Nội, 10058, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.52,
+    "capacity": 1,
+    "latOrigin": 21.0394266,
+    "lngOrigin": 105.80456,
+    "latDestination": 21.0070908,
+    "lngDestination": 105.8344116,
+    "addressStart": "Trường Tiểu học và THCS FPT Cầu Giấy, Ngõ 1 Đông Quan, Phường Quan Hoa, Quận Cầu Giấy, Thành phố Hà Nội, 11150, Việt Nam",
+    "addressEnd": "Trường Phổ thông H.A.S, Phố Lương Định Của, Phường Kim Liên, Quận Đống Đa, Thành phố Hà Nội, 10306, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.75,
+    "capacity": 2,
+    "latOrigin": 21.0178963,
+    "lngOrigin": 105.8279668,
+    "latDestination": 21.0319429,
+    "lngDestination": 105.8066284,
+    "addressStart": "Trường Tiểu học Vietkids, Ngõ Giếng, Phường Ô Chợ Dừa, Quận Đống Đa, Thành phố Hà Nội, 10178, Việt Nam",
+    "addressEnd": "Trường Tiểu học Thủ Lệ, 3, Ngõ 9 Đào Tấn, Phường Cống Vị, Quận Ba Đình, Thành phố Hà Nội, 11150, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.32,
+    "capacity": 1,
+    "latOrigin": 20.9971635,
+    "lngOrigin": 105.8073518,
+    "latDestination": 21.0091683,
+    "lngDestination": 105.8065419,
+    "addressStart": "Trường THCS Thanh Xuân Trung, 90, Đường Nguyễn Tuân, Phường Thanh Xuân Trung, Quận Thanh Xuân, Thành phố Hà Nội, 10055, Việt Nam",
+    "addressEnd": "Atlantic 125 Hoang Ngan, 63A, Đường Lê Văn Lương, Phường Trung Hòa, Quận Cầu Giấy, Thành phố Hà Nội, 10055, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.25,
+    "capacity": 1,
+    "latOrigin": 20.993477,
+    "lngOrigin": 105.8487347,
+    "latDestination": 21.0268139,
+    "lngDestination": 105.7739734,
+    "addressStart": "Trường Tiểu học Trung Hiền, Ngõ Trại Cá, Phường Trương Định, Quận Hai Bà Trưng, Thành phố Hà Nội, 11617, Việt Nam",
+    "addressEnd": "Trường Tiểu học Mỹ Đình 2, Phố Trần Hữu Dực, Phường Mỹ Đình 2, Quận Nam Từ Liêm, Thành phố Hà Nội, 10057, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.73,
+    "capacity": 4,
+    "latOrigin": 21.0269606,
+    "lngOrigin": 105.8178058,
+    "latDestination": 21.0220103,
+    "lngDestination": 105.8295492,
+    "addressStart": "Cover School 17.11, 4, Phố Ngọc Khánh, Phường Giảng Võ, Quận Ba Đình, Thành phố Hà Nội, 10067, Việt Nam",
+    "addressEnd": "Trường THPT Đống Đa, 10, Ngõ Quan Thổ 1, Phường Hàng Bột, Quận Đống Đa, Thành phố Hà Nội, 10178, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.36,
+    "capacity": 2,
+    "latOrigin": 21.0377657,
+    "lngOrigin": 105.847435,
+    "latDestination": 21.0433338,
+    "lngDestination": 105.7764424,
+    "addressStart": "Trường THCS Thanh Quan, Phố Hàng Chai, Khu phố cổ, Quận Hoàn Kiếm, Thành phố Hà Nội, 11058, Việt Nam",
+    "addressEnd": "Trường Tiểu học Nguyễn Khả Trạc, Ngõ 122 Phố Mai Dịch, Xóm Đồng Xa, Phường Mai Dịch, Quận Cầu Giấy, Thành phố Hà Nội, 10065, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.64,
+    "capacity": 3,
+    "latOrigin": 21.0496136,
+    "lngOrigin": 105.8450192,
+    "latDestination": 21.0044922,
+    "lngDestination": 105.80124,
+    "addressStart": "Trường Trung cấp Xây dựng Hà Nội, Phố Nghĩa Dũng, Phường Phúc Xá, Quận Ba Đình, Thành phố Hà Nội, 11117, Việt Nam",
+    "addressEnd": "Trường Liên cấp TH & THCS Ngôi Sao Hà Nội, Phố Nguyễn Xuân Linh, Phường Nhân Chính, Quận Thanh Xuân, Thành phố Hà Nội, 10055, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.29,
+    "capacity": 1,
+    "latOrigin": 21.0147223,
+    "lngOrigin": 105.7810413,
+    "latDestination": 21.0391227,
+    "lngDestination": 105.7829168,
+    "addressStart": "Trường Tiểu học Lômônôxốp, Phố Mễ Trì Hạ, Phường Mễ Trì, Quận Nam Từ Liêm, Thành phố Hà Nội, 10074, Việt Nam",
+    "addressEnd": "Trường Đại học Sư phạm Hà Nội, 136, Đường Xuân Thủy, Phường Dịch Vọng Hậu, Quận Cầu Giấy, Thành phố Hà Nội, 10141, Việt Nam",
+    "length": 1.4
+  },
+  {
+    "pickUpTime": 7.52,
+    "capacity": 2,
+    "latOrigin": 21.0094054,
+    "lngOrigin": 105.8494822,
+    "latDestination": 21.0358751,
+    "lngDestination": 105.8251437,
+    "addressStart": "Trường THCS Vân Hồ, 193, Phố Bà Triệu, Phường Lê Đại Hành, Quận Hai Bà Trưng, Thành phố Hà Nội, 10058, Việt Nam",
+    "addressEnd": "Trường Tiểu học Đại Yên, Ngõ 185 Đội Cấn, Phường Đội Cấn, Quận Ba Đình, Thành phố Hà Nội, 10229, Việt Nam",
+    "length": 1.4
+  }
+]
