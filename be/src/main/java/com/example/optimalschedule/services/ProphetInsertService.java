@@ -1,6 +1,7 @@
 package com.example.optimalschedule.services;
 
 import com.example.optimalschedule.common.exception.NotImplementedException;
+import com.example.optimalschedule.constant.GroupType;
 import com.example.optimalschedule.entity.*;
 import com.example.optimalschedule.gripmap.MapUtility;
 import com.example.optimalschedule.model.ExpectedTimeRequest;
@@ -127,7 +128,7 @@ public class ProphetInsertService {
     }
 
     public RideResponse createNewGroup(PredictedRequest data, int gridOriginId, int gridDesId, int userId, int typeGroup, int requestType) {
-        if (typeGroup == 0) {
+        if (typeGroup == GroupType.GUIDANCE.getValue()) {
             // Create group
             Driver taxi = driverRepository.findOneNewHypoTaxi();
             if (taxi == null) {

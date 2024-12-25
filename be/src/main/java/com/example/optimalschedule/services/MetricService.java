@@ -1,5 +1,6 @@
 package com.example.optimalschedule.services;
 
+import com.example.optimalschedule.constant.GroupType;
 import com.example.optimalschedule.entity.GroupFrequent;
 import com.example.optimalschedule.entity.GuidanceSchedule;
 import com.example.optimalschedule.entity.RequestRide;
@@ -32,7 +33,7 @@ public class MetricService {
     private DriverRepository driverRepository;
 
     public String getAllScheduleMetricsProphet(long totalRunningTime, long count) {
-        List<GroupFrequent> listGroup = gfRepository.findAllByType(0);
+        List<GroupFrequent> listGroup = gfRepository.findAllByType(GroupType.GUIDANCE.getValue());
         List<Integer> groupIdDontServeOnline = new ArrayList<>();
         for (GroupFrequent group : listGroup) {
             List<GuidanceSchedule> schedules = scheduleRepository.findByGroupIdOrderByExpectedTime(group.getId());
@@ -58,7 +59,7 @@ public class MetricService {
                 totalTime += (schedules.get(i + 1).getExpectedTime() - schedules.get(i).getExpectedTime());
             }
         }
-        List<RequestRide> requestNotServed = rqRepository.findByStatusId(4);
+        List<RequestRide> requestNotServed = rqRepository.findByStatusId(4); // 4 is cannot served
         double betaForUnifiedCost = 10.0;
         double unifiedCost = requestNotServed.size() * betaForUnifiedCost + totalTime;
         return "Number of request served: " + count + "\n Number of groups: " + (listGroup.size() - groupIdDontServeOnline.size())
@@ -67,7 +68,7 @@ public class MetricService {
                 + "\n Number of request not served: " + requestNotServed.size() ;
     };
     public String getAllScheduleMetricsPlain(long totalRunningTime, long count) {
-        List<GroupFrequent> listGroup = gfRepository.findAllByType(1);
+        List<GroupFrequent> listGroup = gfRepository.findAllByType(GroupType.ONLY_ONLINE.getValue());
         //get total time running in roads - cost
         double totalTime = 0.0;
         for (GroupFrequent group : listGroup) {
@@ -77,7 +78,7 @@ public class MetricService {
                 totalTime += (schedules.get(i + 1).getExpectedTime() - schedules.get(i).getExpectedTime());
             }
         }
-        List<RequestRide> requestNotServed = rqRepository.findByStatusId(4);
+        List<RequestRide> requestNotServed = rqRepository.findByStatusId(4); // 4 is cannot served
         double betaForUnifiedCost = 10.0;
         double unifiedCost = requestNotServed.size() * betaForUnifiedCost + totalTime;
         return "Number of request served: " + count + "\n Number of groups: " + (listGroup.size())
